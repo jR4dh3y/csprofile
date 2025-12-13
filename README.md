@@ -18,13 +18,4 @@ Edit `src/lib/config.ts` to customize:
 - Weapon loadout, categories
 - UI text & colors
 
-API keys go in `.env`:
-- `STEAM_API_KEY` / `STEAM_ID`
-- `LEETIFY_API_KEY` (optional)
-- `ALLSTAR_API_KEY` (optional)
-
-## Build
-
-```bash
-npm run build
-```
+API keys go in `.env` (check .env.example)
