@@ -21,6 +21,13 @@ export interface ProfileTeammate {
   name: string;
   profileUrl: string;
   avatarUrl?: string;
+  roles?: string[];
+  leetifyRating?: number | null;
+  aim?: number | null;
+  positioning?: number | null;
+  utility?: number | null;
+  clutch?: number | null;
+  opening?: number | null;
 }
 
 export interface ClutchData {
