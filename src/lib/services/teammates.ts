@@ -1,6 +1,7 @@
 import { fetchSteamPlayer } from './steam';
 import { fetchLeetifyProfile } from './leetify';
 import { getTeammateIds } from './config';
+import { TEAMMATE_ROLES, DEFAULT_TEAMMATE_ROLE, API_ENDPOINTS } from '$lib/config';
 
 export interface Teammate {
   steamId: string;
@@ -15,12 +16,6 @@ export interface Teammate {
   clutch?: number | null;
   opening?: number | null;
 }
-
-// Hardcoded roles for teammates (as arrays for separate pills)
-const TEAMMATE_ROLES: Record<number, string[]> = {
-  0: ['Lurker', 'Support'],
-  1: ['Support', 'Anchor', 'Cier-Moment']
-};
 
 export async function fetchTeammates(): Promise<Teammate[]> {
   const ids = getTeammateIds();
@@ -38,9 +33,9 @@ export async function fetchTeammates(): Promise<Teammate[]> {
         teammates.push({
           steamId,
           name: player.personaname,
-          profileUrl: player.profileurl || `https://steamcommunity.com/profiles/${steamId}`,
+          profileUrl: player.profileurl || `${API_ENDPOINTS.steamCommunity}/profiles/${steamId}`,
           avatarUrl: player.avatar,
-          roles: TEAMMATE_ROLES[i] || ['Rifler'],
+          roles: TEAMMATE_ROLES[i] || DEFAULT_TEAMMATE_ROLE,
           leetifyRating: leetifyData?.rating ?? null,
           aim: leetifyData?.aim ?? null,
           positioning: leetifyData?.positioning ?? null,

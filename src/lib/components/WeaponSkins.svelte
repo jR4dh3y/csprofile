@@ -1,21 +1,15 @@
 <script lang="ts">
   import type { CS2WeaponSkin } from '$lib/types';
+  import { WEAPON_CATEGORIES, WEAPON_CATEGORY_ORDER, UI_TEXT } from '$lib/config';
 
   export let weapons: CS2WeaponSkin[];
 
   let expanded = false;
 
-  // Categories with their weapon patterns
-  const categories = [
-    { name: 'Pistols', patterns: ['glock', 'usp', 'p250', 'desert eagle'] },
-    { name: 'Rifles', patterns: ['ak-47', 'm4a4', 'm4a1'] },
-    { name: 'Snipers', patterns: ['awp', 'ssg'] }
-  ];
-
   // Get category for a weapon
   function getCategory(weaponName: string): string {
     const lower = weaponName.toLowerCase();
-    for (const cat of categories) {
+    for (const cat of WEAPON_CATEGORIES) {
       if (cat.patterns.some((p) => lower.includes(p))) {
         return cat.name;
       }
@@ -35,8 +29,7 @@
   );
 
   // Order categories
-  const categoryOrder = ['Pistols', 'Rifles', 'Snipers', 'Other'];
-  $: sortedCategories = categoryOrder
+  $: sortedCategories = WEAPON_CATEGORY_ORDER
     .filter((cat) => categorizedWeapons[cat]?.length > 0)
     .map((cat) => ({ name: cat, skins: categorizedWeapons[cat] }));
 </script>
@@ -49,7 +42,7 @@
       on:click={() => (expanded = !expanded)}
     >
       <span class="text-primary">{expanded ? '−' : '+'}</span>
-      <span>My Loadout ({weapons.length})</span>
+      <span>{UI_TEXT.myLoadout} ({weapons.length})</span>
     </button>
 
     {#if expanded}

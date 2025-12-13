@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { AllstarClipDisplay } from '$lib/types';
+  import { API_ENDPOINTS, UI_TEXT, DEFAULT_CLIP_TITLE } from '$lib/config';
 
   export let clips: AllstarClipDisplay[];
   export let steamId: string;
@@ -9,7 +10,7 @@
 
   $: selectedClip = clips[selectedIndex];
   $: embedUrl = selectedClip
-    ? `https://allstar.gg/iframe?clip=${selectedClip.id}&known=true&UID=${steamId}&location=userProfile`
+    ? `${API_ENDPOINTS.allstarEmbed}?clip=${selectedClip.id}&known=true&UID=${steamId}&location=userProfile`
     : '';
 
   function prev() {
@@ -29,7 +30,7 @@
       on:click={() => (expanded = !expanded)}
     >
       <span class="text-primary">{expanded ? '−' : '+'}</span>
-      <span>Highlights ({clips.length})</span>
+      <span>{UI_TEXT.highlights} ({clips.length})</span>
     </button>
 
     {#if expanded}
@@ -45,7 +46,7 @@
         </div>
 
         <div class="text-center text-sm text-text font-medium truncate">
-          {selectedClip?.title || 'Highlight'}
+          {selectedClip?.title || DEFAULT_CLIP_TITLE}
         </div>
 
         <div class="flex items-center justify-between">
@@ -54,7 +55,7 @@
             on:click={prev}
             class="px-3 py-1.5 text-sm rounded bg-surface border border-border text-muted hover:text-text hover:border-primary transition-colors"
           >
-            ← Prev
+            {UI_TEXT.prevButton}
           </button>
           <span class="text-xs text-muted font-mono">{selectedIndex + 1} / {clips.length}</span>
           <button
@@ -62,7 +63,7 @@
             on:click={next}
             class="px-3 py-1.5 text-sm rounded bg-surface border border-border text-muted hover:text-text hover:border-primary transition-colors"
           >
-            Next →
+            {UI_TEXT.nextButton}
           </button>
         </div>
       </div>

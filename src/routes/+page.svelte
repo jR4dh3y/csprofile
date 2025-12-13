@@ -1,21 +1,20 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { Identity, ClutchStats, HighlightsCarousel, Teammates, MusicKits, WeaponSkins } from '$lib/components';
+  import { PAGE_TITLE, PAGE_DESCRIPTION, PLAYER_ROLES, FOOTER_LINK, UI_TEXT } from '$lib/config';
 
   export let data: PageData;
-
-  const roles = ['AWPer', 'IGL/Entry', 'Team Player'];
 </script>
 
 <svelte:head>
-  <title>CS2 Profile</title>
-  <meta name="description" content="Counter-Strike 2 profile" />
+  <title>{PAGE_TITLE}</title>
+  <meta name="description" content={PAGE_DESCRIPTION} />
 </svelte:head>
 
 <main class="min-h-screen bg-background flex flex-col">
   <div class="max-w-3xl mx-auto px-6 pt-10 pb-4 flex-1 w-full">
     {#if !data.profile}
-      <p class="text-sm text-muted">Profile unavailable</p>
+      <p class="text-sm text-muted">{UI_TEXT.profileUnavailable}</p>
     {:else}
       <div class="space-y-4">
         <!-- Identity -->
@@ -23,7 +22,7 @@
 
         <!-- Roles -->
         <div class="flex flex-wrap gap-2">
-          {#each roles as role}
+          {#each PLAYER_ROLES as role}
             <span class="px-3 py-1 text-xs rounded-full bg-surface border border-border text-muted">
               {role}
             </span>
@@ -94,8 +93,8 @@
   {#if data.profile}
     <footer class="max-w-3xl mx-auto px-6 pb-4 w-full">
       <div class="flex justify-between items-center text-xs font-mono pt-2 border-t text-muted border-border">
-        <span>Updated {new Date(data.profile.lastUpdated).toLocaleDateString()}</span>
-        <a href="https://radhey.dev" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">radhey.dev</a>
+        <span>{UI_TEXT.updated} {new Date(data.profile.lastUpdated).toLocaleDateString()}</span>
+        <a href={FOOTER_LINK.url} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">{FOOTER_LINK.text}</a>
       </div>
     </footer>
   {/if}

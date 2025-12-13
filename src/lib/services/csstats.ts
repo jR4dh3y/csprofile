@@ -1,5 +1,6 @@
 import { getCached, setCache } from './cache';
 import { getConfig } from './config';
+import { STATS_FALLBACK } from '$lib/config';
 
 export interface CSStatsData {
   hltvRating: number | null;
@@ -25,19 +26,7 @@ export async function fetchCSStats(steamId: string): Promise<CSStatsData | null>
   return null;
 }
 
-// Fallback values - update these with your actual stats
+// Fallback values from centralized config
 export function getCSStatsFallback(): CSStatsData {
-  return {
-    hltvRating: 1.25,
-    hsPercent: 52.3,
-    adr: 85.4,
-    kd: 1.15,
-    clutch1v1: 65,
-    clutch1v2: 42,
-    clutch1v3: 28,
-    clutch1v4: null,
-    clutch1v5: null,
-    // Your crosshair code - update this with your actual crosshair
-    crosshair: 'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
-  };
+  return { ...STATS_FALLBACK };
 }

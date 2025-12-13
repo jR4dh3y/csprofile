@@ -1,17 +1,15 @@
 <script lang="ts">
   import type { ProfileMetric } from '$lib/types';
+  import { METRIC_COLOR_MAP, METRIC_DEFAULT_COLOR } from '$lib/config';
 
   export let metric: ProfileMetric;
 
   function getAccentColor(label: string): string {
     const lower = label.toLowerCase();
-    if (lower.includes('premier') || lower.includes('rank')) return 'text-primary';
-    if (lower.includes('rating') || lower.includes('hltv')) return 'text-highlight';
-    if (lower.includes('aim') || lower.includes('k/d')) return 'text-error';
-    if (lower.includes('positioning')) return 'text-secondary';
-    if (lower.includes('utility')) return 'text-primary';
-    if (lower.includes('win')) return 'text-warning';
-    return 'text-text';
+    for (const { keywords, colorClass } of METRIC_COLOR_MAP) {
+      if (keywords.some(kw => lower.includes(kw))) return colorClass;
+    }
+    return METRIC_DEFAULT_COLOR;
   }
 </script>
 

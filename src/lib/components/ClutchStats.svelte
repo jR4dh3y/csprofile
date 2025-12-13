@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { UI_TEXT } from '$lib/config';
+
   export let clutch1v1: number | null;
   export let clutch1v2: number | null;
   export let clutch1v3: number | null;
@@ -12,7 +14,7 @@
 
 {#if clutches.length > 0}
   <div class="p-5 rounded-lg col-span-2 sm:col-span-3 bg-surface border border-border">
-    <p class="text-xs uppercase tracking-wider mb-4 text-muted">Clutch Success</p>
+    <p class="text-xs uppercase tracking-wider mb-4 text-muted">{UI_TEXT.clutchSuccess}</p>
     <div class="flex items-center justify-around gap-6">
       {#each clutches as clutch (clutch.label)}
         <div class="text-center">

@@ -6,6 +6,7 @@ import { fetchLeetifyProfile, formatDecimal } from '$lib/services/leetify';
 import { fetchAllstarClips } from '$lib/services/allstar';
 import { fetchTeammates } from '$lib/services/teammates';
 import { getCSStatsFallback } from '$lib/services/csstats';
+import { PROFILE_CONTEXT, DEFAULT_PLAYER_NAME } from '$lib/config';
 
 export const load: PageServerLoad = async () => {
   const config = getConfig();
@@ -102,8 +103,8 @@ export const load: PageServerLoad = async () => {
 
   const profile: ProfileData = {
     identity: {
-      handle: steamPlayer?.personaname || 'Player',
-      context: 'Counter-Strike 2',
+      handle: steamPlayer?.personaname || DEFAULT_PLAYER_NAME,
+      context: PROFILE_CONTEXT,
       avatarUrl: steamPlayer?.avatarfull || steamPlayer?.avatarmedium,
       profileUrl: steamPlayer?.profileurl,
       medals,

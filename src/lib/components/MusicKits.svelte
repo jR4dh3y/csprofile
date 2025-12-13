@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { CS2MusicKit } from '$lib/types';
   import { getMvpPreviewUrls, hasPreview } from '$lib/data/musicKitPreviews';
+  import { UI_TEXT, MUSIC_KIT_VOLUME } from '$lib/config';
 
   export let musicKits: CS2MusicKit[];
 
@@ -17,7 +18,7 @@
     for (const url of urls) {
       try {
         const audio = new Audio(url);
-        audio.volume = 0.5;
+        audio.volume = MUSIC_KIT_VOLUME;
         
         await new Promise<void>((resolve, reject) => {
           audio.oncanplaythrough = () => resolve();
@@ -72,7 +73,7 @@
       on:click={() => (expanded = !expanded)}
     >
       <span class="text-primary">{expanded ? '−' : '+'}</span>
-      <span>Music Kits ({musicKits.length})</span>
+      <span>{UI_TEXT.musicKits} ({musicKits.length})</span>
     </button>
 
     {#if expanded}
@@ -91,7 +92,7 @@
                   type="button"
                   class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary/20 hover:bg-primary/40 transition-colors"
                   on:click|stopPropagation={() => togglePreview(kit)}
-                  title={currentlyPlaying === kit.name ? 'Stop MVP Preview' : 'Play MVP Preview'}
+                  title={currentlyPlaying === kit.name ? UI_TEXT.stopPreview : UI_TEXT.playPreview}
                 >
                   {#if currentlyPlaying === kit.name}
                     <svg class="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 24 24">

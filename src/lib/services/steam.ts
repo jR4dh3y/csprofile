@@ -9,9 +9,13 @@ import type {
 import { getCached, setCache } from './cache';
 import { getConfig } from './config';
 import { findMusicKitPreview } from '$lib/data/musicKitPreviews';
-
-const STEAM_API_BASE = 'https://api.steampowered.com';
-const CS2_APP_ID = 730;
+import { 
+  API_ENDPOINTS, 
+  CS2_APP_ID, 
+  LOADOUT_WEAPONS, 
+  INVENTORY_EXCLUDE_PATTERNS, 
+  INVENTORY_INCLUDE_PATTERNS 
+} from '$lib/config';
 
 export async function fetchSteamPlayer(steamId: string): Promise<SteamPlayer | null> {
   const cacheKey = `steam_player_${steamId}`;
@@ -21,7 +25,7 @@ export async function fetchSteamPlayer(steamId: string): Promise<SteamPlayer | n
   if (cached) return cached;
 
   try {
-    const url = `${STEAM_API_BASE}/ISteamUser/GetPlayerSummaries/v2/?key=${config.steam.apiKey}&steamids=${steamId}`;
+    const url = `${API_ENDPOINTS.steam}/ISteamUser/GetPlayerSummaries/v2/?key=${config.steam.apiKey}&steamids=${steamId}`;
     const response = await fetch(url);
 
     if (!response.ok) return null;
@@ -44,7 +48,7 @@ export async function fetchCS2Playtime(steamId: string): Promise<number | null> 
   if (cached !== null) return cached;
 
   try {
-    const url = `${STEAM_API_BASE}/IPlayerService/GetOwnedGames/v1/?key=${config.steam.apiKey}&steamid=${steamId}&include_appinfo=true&include_played_free_games=true`;
+    const url = `${API_ENDPOINTS.steam}/IPlayerService/GetOwnedGames/v1/?key=${config.steam.apiKey}&steamid=${steamId}&include_appinfo=true&include_played_free_games=true`;
     const response = await fetch(url);
 
     if (!response.ok) return null;
@@ -76,8 +80,8 @@ export async function fetchCS2Inventory(steamId: string): Promise<CS2Medal[]> {
   if (cached) return cached;
 
   try {
-    // Steam inventory API for CS2 (app id 730)
-    const url = `https://steamcommunity.com/inventory/${steamId}/730/2?l=english&count=500`;
+    // Steam inventory API for CS2
+    const url = `${API_ENDPOINTS.steamCommunity}/inventory/${steamId}/${CS2_APP_ID}/2?l=english&count=500`;
     const response = await fetch(url, {
       headers: { 'Accept': 'application/json' }
     });
@@ -88,20 +92,6 @@ export async function fetchCS2Inventory(steamId: string): Promise<CS2Medal[]> {
     
     if (!data.descriptions) return [];
 
-    // Filter for medals, coins, and collectibles - exclude graffiti, stickers, cases, keys, etc.
-    const excludePatterns = [
-      'Graffiti', 'Sticker', 'Case', 'Key', 'Container', 
-      'Patch', 'Agent', 'Music Kit', 'Capsule', 'Package',
-      'Souvenir', 'StatTrak'
-    ];
-    
-    // Items we want: Service Medals, Operation Coins, Pins, Trophies
-    const includePatterns = [
-      'Service Medal', 'Coin', 'Trophy', 'Pin', 'Badge', 
-      'Collectible', 'Medal', 'Pick\'Em', 'Extraordinary Collectible',
-      'Extraordinary', 'High Grade Collectible', 'Remarkable Collectible'
-    ];
-    
     const medals: CS2Medal[] = data.descriptions
       .filter((item: { type?: string; name?: string; market_name?: string; tags?: Array<{ localized_tag_name: string; category: string }> }) => {
         const itemType = item.type || '';
@@ -109,14 +99,14 @@ export async function fetchCS2Inventory(steamId: string): Promise<CS2Medal[]> {
         const marketName = item.market_name || '';
         
         // Exclude unwanted items by type or name
-        const isExcluded = excludePatterns.some(ex => 
+        const isExcluded = INVENTORY_EXCLUDE_PATTERNS.some(ex => 
           itemType.toLowerCase().includes(ex.toLowerCase()) || 
           itemName.toLowerCase().includes(ex.toLowerCase())
         );
         if (isExcluded) return false;
         
         // Check if it's a collectible/medal type
-        const isCollectible = includePatterns.some(inc => 
+        const isCollectible = INVENTORY_INCLUDE_PATTERNS.some(inc => 
           itemType.toLowerCase().includes(inc.toLowerCase()) ||
           itemName.toLowerCase().includes(inc.toLowerCase()) ||
           marketName.toLowerCase().includes(inc.toLowerCase())
@@ -124,7 +114,7 @@ export async function fetchCS2Inventory(steamId: string): Promise<CS2Medal[]> {
         
         // Also check tags for "Type: Collectible" category
         const hasCollectibleTag = item.tags?.some((tag: { localized_tag_name: string; category: string }) => 
-          tag.category === 'Type' && includePatterns.some(inc => 
+          tag.category === 'Type' && INVENTORY_INCLUDE_PATTERNS.some(inc => 
             tag.localized_tag_name?.toLowerCase().includes(inc.toLowerCase())
           )
         );
@@ -133,7 +123,7 @@ export async function fetchCS2Inventory(steamId: string): Promise<CS2Medal[]> {
       })
       .map((item: { name: string; icon_url: string; type: string }) => ({
         name: item.name,
-        iconUrl: `https://steamcommunity-a.akamaihd.net/economy/image/${item.icon_url}`,
+        iconUrl: `${API_ENDPOINTS.steamCdn}/${item.icon_url}`,
         type: item.type
       }))
       // Sort by year in name (oldest first to show progression)
@@ -158,7 +148,7 @@ export async function fetchCS2MusicKits(steamId: string): Promise<CS2MusicKit[]>
   if (cached) return cached;
 
   try {
-    const url = `https://steamcommunity.com/inventory/${steamId}/730/2?l=english&count=500`;
+    const url = `${API_ENDPOINTS.steamCommunity}/inventory/${steamId}/${CS2_APP_ID}/2?l=english&count=500`;
     const response = await fetch(url, {
       headers: { 'Accept': 'application/json' }
     });
@@ -180,7 +170,7 @@ export async function fetchCS2MusicKits(steamId: string): Promise<CS2MusicKit[]>
         return {
           name: cleanName,
           artist: item.name.includes('|') ? item.name.split('|')[0].replace('Music Kit', '').replace('StatTrak™', '').trim() : '',
-          iconUrl: `https://steamcommunity-a.akamaihd.net/economy/image/${item.icon_url}`,
+          iconUrl: `${API_ENDPOINTS.steamCdn}/${item.icon_url}`,
           isStatTrak: item.name.includes('StatTrak'),
           previewUrl: findMusicKitPreview(cleanName)
         };
@@ -193,21 +183,6 @@ export async function fetchCS2MusicKits(steamId: string): Promise<CS2MusicKit[]>
   }
 }
 
-// Weapons to show in the loadout section (lowercase for matching)
-const LOADOUT_WEAPONS = [
-  'glock',
-  'usp',
-  'p250',
-  'ak-47',
-  'm4a4',
-  'm4a1',
-  'awp',
-  'desert eagle',
-  'deagle',
-  'ssg',
-  'scout'
-];
-
 export async function fetchCS2WeaponSkins(steamId: string): Promise<CS2WeaponSkin[]> {
   const cacheKey = `steam_cs2_weapons_${steamId}`;
   const config = getConfig();
@@ -216,7 +191,7 @@ export async function fetchCS2WeaponSkins(steamId: string): Promise<CS2WeaponSki
   if (cached) return cached;
 
   try {
-    const url = `https://steamcommunity.com/inventory/${steamId}/730/2?l=english&count=500`;
+    const url = `${API_ENDPOINTS.steamCommunity}/inventory/${steamId}/${CS2_APP_ID}/2?l=english&count=500`;
     const response = await fetch(url, {
       headers: { Accept: 'application/json' }
     });
@@ -291,7 +266,7 @@ export async function fetchCS2WeaponSkins(steamId: string): Promise<CS2WeaponSki
           return {
             weapon: weaponTag?.localized_tag_name || 'Unknown',
             name: item.name,
-            iconUrl: `https://steamcommunity-a.akamaihd.net/economy/image/${item.icon_url}`,
+            iconUrl: `${API_ENDPOINTS.steamCdn}/${item.icon_url}`,
             rarity: rarityTag?.localized_tag_name || 'Common',
             isStatTrak: item.name.includes('StatTrak'),
             stickers: stickers.length > 0 ? stickers : undefined,

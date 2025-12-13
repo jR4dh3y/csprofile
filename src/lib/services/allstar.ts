@@ -2,8 +2,7 @@ import type { AllstarClipsResponse, AllstarClip, AllstarClipDisplay } from '$lib
 import { getCached, setCache } from './cache';
 import { getConfig } from './config';
 import clipsData from '$lib/data/clips.json';
-
-const ALLSTAR_API_BASE = 'https://prt.allstar.gg';
+import { API_ENDPOINTS, DEFAULT_CLIP_DURATION, DEFAULT_CLIP_TITLE } from '$lib/config';
 
 export async function fetchAllstarClips(
   steamId: string,
@@ -31,10 +30,10 @@ export async function fetchAllstarClips(
   if (manualClips.length > 0) {
     const clips = manualClips.slice(0, limit).map((clip) => ({
       id: clip.id.trim(),
-      title: clip.title || 'Highlight',
-      thumbnail: `https://media.allstar.gg/clips/${clip.id.trim()}/thumb.jpg`,
-      embedUrl: `https://allstar.gg/iframe?clip=${clip.id.trim()}`,
-      duration: 15,
+      title: clip.title || DEFAULT_CLIP_TITLE,
+      thumbnail: `${API_ENDPOINTS.allstarMedia}/${clip.id.trim()}/thumb.jpg`,
+      embedUrl: `${API_ENDPOINTS.allstarEmbed}?clip=${clip.id.trim()}`,
+      duration: DEFAULT_CLIP_DURATION,
       date: new Date().toISOString(),
       map: undefined,
       kills: undefined
@@ -54,7 +53,7 @@ async function fetchClipsFromAPI(
 ): Promise<AllstarClipDisplay[]> {
   try {
     // Try fetching by Steam ID first
-    let url = `${ALLSTAR_API_BASE}/user/clips?steamId=${steamId}&limit=${limit}&sort=date`;
+    let url = `${API_ENDPOINTS.allstar}/user/clips?steamId=${steamId}&limit=${limit}&sort=date`;
     let response = await fetch(url, { headers: { 'X-API-Key': apiKey } });
 
     let data: AllstarClipsResponse | null = null;
@@ -65,7 +64,7 @@ async function fetchClipsFromAPI(
 
     // If no clips, try by username
     if (!data?.data?.clips?.length && username) {
-      url = `${ALLSTAR_API_BASE}/user/clips?userId=${username}&limit=${limit}&sort=date`;
+      url = `${API_ENDPOINTS.allstar}/user/clips?userId=${username}&limit=${limit}&sort=date`;
       response = await fetch(url, { headers: { 'X-API-Key': apiKey } });
 
       if (response.ok) {
@@ -101,7 +100,7 @@ function transformClip(clip: AllstarClip): AllstarClipDisplay {
 }
 
 export function buildEmbedUrl(clipId: string, steamId: string): string {
-  return `https://allstar.gg/iframe?clip=${clipId}&known=true&UID=${steamId}`;
+  return `${API_ENDPOINTS.allstarEmbed}?clip=${clipId}&known=true&UID=${steamId}`;
 }
 
 export function formatDuration(seconds: number): string {

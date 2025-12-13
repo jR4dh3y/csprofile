@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ProfileIdentity } from '$lib/types';
+  import { UI_TEXT } from '$lib/config';
 
   export let identity: ProfileIdentity;
   
@@ -55,7 +56,7 @@
           class="text-xs px-2 py-0.5 rounded bg-surface border border-border text-muted hover:text-text hover:border-primary transition-colors"
           title="Copy crosshair code"
         >
-          {copied ? '✓ Copied!' : '⊕ Crosshair'}
+          {copied ? UI_TEXT.copiedCrosshair : UI_TEXT.copyCrosshair}
         </button>
       {/if}
     </div>

@@ -1,8 +1,7 @@
 import type { LeetifyRank } from '$lib/types';
 import { getCached, setCache } from './cache';
 import { getConfig } from './config';
-
-const LEETIFY_API_BASE = 'https://api-public.cs-prod.leetify.com';
+import { API_ENDPOINTS, CS2_RANKS } from '$lib/config';
 
 export interface LeetifyData {
   rating: number | null;
@@ -32,7 +31,7 @@ export async function fetchLeetifyProfile(steamId: string): Promise<LeetifyData 
   if (cached) return cached;
 
   try {
-    const url = `${LEETIFY_API_BASE}/v3/profile?steam64_id=${steamId}`;
+    const url = `${API_ENDPOINTS.leetify}/v3/profile?steam64_id=${steamId}`;
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (config.leetify.apiKey) {
       headers['Authorization'] = `Bearer ${config.leetify.apiKey}`;
@@ -124,28 +123,6 @@ export function formatPremierRank(skillLevel: number | undefined): string {
   if (skillLevel >= 30000) return `${(skillLevel / 1000).toFixed(0)}k`;
   return skillLevel.toLocaleString();
 }
-
-const CS2_RANKS = [
-  '',
-  'Silver I',
-  'Silver II',
-  'Silver III',
-  'Silver IV',
-  'Silver Elite',
-  'Silver Elite Master',
-  'Gold Nova I',
-  'Gold Nova II',
-  'Gold Nova III',
-  'Gold Nova Master',
-  'Master Guardian I',
-  'Master Guardian II',
-  'Master Guardian Elite',
-  'Distinguished Master Guardian',
-  'Legendary Eagle',
-  'Legendary Eagle Master',
-  'Supreme Master First Class',
-  'Global Elite'
-];
 
 export function formatCompetitiveRank(rank: number): string {
   return CS2_RANKS[rank] || `Rank ${rank}`;
