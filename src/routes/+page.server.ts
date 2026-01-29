@@ -69,7 +69,7 @@ export const load: PageServerLoad = async () => {
 
   if (leetify?.reactionTime != null) {
     metrics.push({
-      label: 'Reaction',
+      label: 'Time to DMG',
       value: `${Math.round(leetify.reactionTime)}ms`
     });
   }
