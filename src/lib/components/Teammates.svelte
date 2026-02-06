@@ -13,7 +13,7 @@
 {#if teammates.length > 0}
   <div class="flex items-center gap-3 flex-wrap">
     <span class="uppercase tracking-wide text-xs text-muted">{UI_TEXT.playsWith}</span>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 flex-wrap">
       {#each teammates as teammate (teammate.steamId)}
         <div class="relative group/tooltip">
           <a
