@@ -13,12 +13,12 @@
 </script>
 
 {#if clutches.length > 0}
-  <div class="p-5 rounded-lg col-span-2 sm:col-span-3 bg-surface border border-border">
-    <p class="text-xs uppercase tracking-wider mb-4 text-muted">{UI_TEXT.clutchSuccess}</p>
-    <div class="flex items-center justify-around gap-6">
+  <div class="p-3 sm:p-5 rounded-lg col-span-2 sm:col-span-3 bg-surface border border-border">
+    <p class="text-xs uppercase tracking-wider mb-3 sm:mb-4 text-muted">{UI_TEXT.clutchSuccess}</p>
+    <div class="flex items-center justify-around gap-4 sm:gap-6">
       {#each clutches as clutch (clutch.label)}
         <div class="text-center">
-          <p class="text-2xl font-mono font-medium text-warning">{clutch.value}%</p>
+          <p class="text-xl sm:text-2xl font-mono font-medium text-warning">{clutch.value}%</p>
           <p class="text-xs text-muted mt-1">{clutch.label}</p>
         </div>
       {/each}

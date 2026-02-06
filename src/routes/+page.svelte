@@ -12,7 +12,7 @@
 </svelte:head>
 
 <main class="min-h-screen bg-background flex flex-col">
-  <div class="max-w-3xl mx-auto px-6 pt-10 pb-4 flex-1 w-full">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-4 flex-1 w-full">
     {#if !data.profile}
       <p class="text-sm text-muted">{UI_TEXT.profileUnavailable}</p>
     {:else}
@@ -31,11 +31,11 @@
 
         <!-- Metrics Grid -->
         {#if data.profile.metrics.length > 0}
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             {#each data.profile.metrics as metric (metric.label)}
-              <div class="text-center p-4 rounded-lg bg-surface border border-border">
+              <div class="text-center p-3 sm:p-4 rounded-lg bg-surface border border-border">
                 <p
-                  class="text-2xl font-mono font-medium
+                  class="text-xl sm:text-2xl font-mono font-medium
                          {metric.label.includes('HLTV') || metric.label.includes('K/D')
                     ? 'text-highlight'
                     : metric.label.includes('HS') || metric.label.includes('Reaction')
@@ -91,8 +91,8 @@
 
   <!-- footer -->
   {#if data.profile}
-    <footer class="max-w-3xl mx-auto px-6 pb-4 w-full">
-      <div class="flex justify-between items-center text-xs font-mono pt-2 border-t text-muted border-border">
+    <footer class="max-w-3xl mx-auto px-4 sm:px-6 pb-4 w-full">
+      <div class="flex flex-wrap justify-between items-center gap-2 text-xs font-mono pt-2 border-t text-muted border-border">
         <span>{UI_TEXT.updated} {new Date(data.profile.lastUpdated).toLocaleDateString()}</span>
         <a href={FOOTER_LINK.url} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">{FOOTER_LINK.text}</a>
       </div>
