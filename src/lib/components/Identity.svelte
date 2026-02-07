@@ -34,7 +34,7 @@
       {/if}
       
       {#if identity.medals && identity.medals.length > 0}
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 flex-wrap">
           {#each identity.medals as medal}
             <img 
               src={medal.iconUrl} 
